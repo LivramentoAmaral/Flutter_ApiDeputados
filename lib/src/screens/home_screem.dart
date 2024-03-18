@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
+import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DeputyDetailsPage(deputy: deputy),
+        builder: (context) => DetailsDeputy(deputy: deputy, deputyId: 0, deputyRepository:DeputyRepository(),),
       ),
     );
   }

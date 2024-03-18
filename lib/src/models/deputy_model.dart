@@ -1,5 +1,6 @@
 
 class DeputyModel {
+  final int id;
   final String name;
   final String party;
   final String state;
@@ -12,6 +13,7 @@ class DeputyModel {
   final String biography;
 
   DeputyModel({
+    required this.id,
     required this.name,
     required this.party,
     required this.state,
@@ -26,6 +28,7 @@ class DeputyModel {
 
   factory DeputyModel.fromJson(Map<String, dynamic> json) {
     return DeputyModel(
+      id: json['id'],
       name: json['nome'],
       party: json['siglaPartido'],
       state: json['siglaUf'],
@@ -39,3 +42,6 @@ class DeputyModel {
     );
   }
 }
+
+
+

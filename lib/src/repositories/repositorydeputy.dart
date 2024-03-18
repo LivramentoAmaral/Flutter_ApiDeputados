@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 
@@ -31,6 +32,7 @@ class DeputyRepository {
 
           for (final item in data) {
             final deputy = DeputyModel(
+              id: item['id'],
               name: item['nome'] ?? '',
               party: item['siglaPartido'] ?? '',
               state: item['siglaUf'] ?? '',
@@ -58,7 +60,7 @@ class DeputyRepository {
     }
   }
 
-  Future<DeputyModel> getDeputyById(int id) async {
+  Future<DeputyModelId> getDeputyById(int id) async {
     final String requestUrl = '$baseUrl/$id';
 
     try {
@@ -71,17 +73,24 @@ class DeputyRepository {
 
         if (responseData != null && responseData.containsKey('dados')) {
           final Map<String, dynamic> data = responseData['dados'];
-          final deputy = DeputyModel(
-            name: data['nome'] ?? '',
-            party: data['siglaPartido'] ?? '',
-            state: data['siglaUf'] ?? '',
-            email: data['email'] ?? '',
-            photo: data['urlFoto'] ?? '',
-            phone: data['telefone'] ?? '',
-            address: data['endereco'] ?? '',
-            social: data['redeSocial'] ?? '',
-            site: data['uri'] ?? '',
-            biography: data['biografia'] ?? '',
+          final deputy = DeputyModelId(
+            nome: data['nome'] ?? '',
+            cpf: data['cpf'] ?? '',
+            dataFalecimento: data['dataFalecimento'] ?? '',
+            dataNascimento: data['dataNascimento'] ?? '',
+            escolaridade: data['escolaridade'] ?? '',
+            id: data['id'] ?? 0,
+            municipioNascimento: data['municipioNascimento'] ?? '',
+            nomeCivil: data['nomeCivil'] ?? '',
+            redeSocial: List<String>.from(data['redeSocial'] ?? []),
+            sexo: data['sexo'] ?? '',
+            ufNascimento: data['ufNascimento'] ?? '',
+            ultimoStatus: Status.fromJson(data['ultimoStatus']),
+            uri: data['uri'] ?? '',
+            urlWebsite: data['urlWebsite'] ?? '',
+            links: (responseData['links'] as List<dynamic>)
+                .map((link) => Link.fromJson(link))
+                .toList(),
           );
           return deputy;
         } else {
@@ -96,95 +105,4 @@ class DeputyRepository {
       throw Exception('Erro ao carregar deputado: $e');
     }
   }
-
-  Future<List<DeputyModel>> getDeputiesByParty(String party) async {
-    final String requestUrl = '$baseUrl?siglaPartido=$party';
-
-    try {
-      final response = await http.get(
-        Uri.parse(requestUrl),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic>? responseData = json.decode(response.body);
-
-        if (responseData != null && responseData.containsKey('dados')) {
-          final List<dynamic> data = responseData['dados'];
-          final List<DeputyModel> deputies = [];
-
-          for (final item in data) {
-            final deputy = DeputyModel(
-              name: item['nome'] ?? '',
-              party: item['siglaPartido'] ?? '',
-              state: item['siglaUf'] ?? '',
-              email: item['email'] ?? '',
-              photo: item['urlFoto'] ?? '',
-              phone: item['telefone'] ?? '',
-              address: item['endereco'] ?? '',
-              social: item['redeSocial'] ?? '',
-              site: item['uri'] ?? '',
-              biography: item['biografia'] ?? '',
-            );
-            deputies.add(deputy);
-          }
-          return deputies;
-        } else {
-          throw Exception(
-              'Erro ao carregar deputados: dados não encontrados na resposta');
-        }
-      } else {
-        throw Exception('Erro ao carregar deputados: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Erro ao carregar deputados: $e');
-      throw Exception('Erro ao carregar deputados: $e');
-    }
-  }
-
-  Future<List<DeputyModel>> getDeputiesByState(String state) async {
-    final String requestUrl = '$baseUrl?siglaUf=$state';
-
-    try {
-      final response = await http.get(
-        Uri.parse(requestUrl),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic>? responseData = json.decode(response.body);
-
-        if (responseData != null && responseData.containsKey('dados')) {
-          final List<dynamic> data = responseData['dados'];
-          final List<DeputyModel> deputies = [];
-
-          for (final item in data) {
-            final deputy = DeputyModel(
-              name: item['nome'] ?? '',
-              party: item['siglaPartido'] ?? '',
-              state: item['siglaUf'] ?? '',
-              email: item['email'] ?? '',
-              photo: item['urlFoto'] ?? '',
-              phone: item['telefone'] ?? '',
-              address: item['endereco'] ?? '',
-              social: item['redeSocial'] ?? '',
-              site: item['uri'] ?? '',
-              biography: item['biografia'] ?? '',
-            );
-            deputies.add(deputy);
-          }
-          return deputies;
-        } else {
-          throw Exception(
-              'Erro ao carregar deputados: dados não encontrados na resposta');
-        }
-      } else {
-        throw Exception('Erro ao carregar deputados: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Erro ao carregar deputados: $e');
-      throw Exception('Erro ao carregar deputados: $e');
-    }
-  }
-
-
-  
 }
