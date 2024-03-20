@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
@@ -13,6 +14,7 @@ class _NameSearchPageState extends State<NameSearchPage> {
   TextEditingController _nameController = TextEditingController();
   String _errorMessage = '';
   bool _loading = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -20,34 +22,61 @@ class _NameSearchPageState extends State<NameSearchPage> {
     _loadDeputiesByName('');
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   Future<void> _loadDeputiesByName(String name) async {
     setState(() {
       _loading = true;
-      _errorMessage = '';
+      if (name.isNotEmpty) {
+        _errorMessage = '';
+      }
     });
     try {
-      final deputies = await _repository.getDeputies(name: name);
-      setState(() {
-        _deputies = deputies;
-        if (_deputies.isEmpty) {
-          _errorMessage =
-              'Nenhum deputado encontrado por favor digite o nome corretamente ex:joão, maria, josé.';
-        }
-      });
+      List<DeputyModel> deputies;
+      if (name.isEmpty) {
+        deputies = await _repository.getDeputies();
+      } else {
+        deputies = await _repository.getDeputies(name: name);
+      }
+      if (mounted) {
+        setState(() {
+          _deputies = deputies;
+          if (_deputies.isEmpty && name.isNotEmpty) {
+            _errorMessage =
+                'Nenhum deputado encontrado. Por favor, digite o nome corretamente (ex: João, Maria, José).';
+          } else {
+            _errorMessage =
+                ''; // Limpa a mensagem de erro se deputados forem encontrados
+          }
+        });
+      }
     } catch (e) {
       print('Erro ao carregar deputados: $e');
-      setState(() {
-        _errorMessage = 'Erro ao carregar deputados.';
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage =
+              'Tente novamente'; // Define a mensagem de erro como "Tente novamente"
+        });
+      }
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
   void _searchDeputies(String query) {
-    _loadDeputiesByName(query);
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _loadDeputiesByName(query);
+    });
   }
 
   void _clearSearch() {
@@ -59,55 +88,61 @@ class _NameSearchPageState extends State<NameSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesquisar por Nome'),
+        title: Text('Pesquisar por Nome do Deputado'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _nameController,
-                onChanged: _searchDeputies,
-                decoration: const InputDecoration(
-                  labelText: 'Nome do Deputado',
-                  hintText: 'Ex: João, Maria...',
-                  border: OutlineInputBorder(),
-                ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _nameController,
+              onChanged: _searchDeputies,
+              decoration: const InputDecoration(
+                labelText: 'Nome do Deputado',
+                hintText: 'Ex: João, Maria...',
+                border: OutlineInputBorder(),
               ),
             ),
-            Expanded(
-              child: _loading
-                  ? Center(child: CircularProgressIndicator())
-                  : _deputies.isEmpty
-                      ? Center(
-                          child: Text(
-                            _errorMessage,
-                            style: TextStyle(color: Colors.red),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : ListView.builder(
-                          itemCount: _deputies.length,
-                          itemBuilder: (context, index) {
-                            final deputy = _deputies[index];
-                            return ListTile(
-                              title: Text(deputy.name),
-                              subtitle:
-                                  Text('${deputy.party} - ${deputy.state}'),
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(deputy.photo),
-                              ),
-                              onTap: () {
-                                // Implemente a navegação para os detalhes do deputado aqui
-                              },
-                            );
-                          },
+          ),
+          Expanded(
+            child: _loading
+                ? Center(child: CircularProgressIndicator())
+                : _deputies.isEmpty && _errorMessage.isNotEmpty
+                    ? Center(
+                        child: Text(
+                          _errorMessage,
+                          style: TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
                         ),
-            ),
-          ],
-        ),
+                      )
+                    : _deputies.isEmpty
+                        ? Center(
+                            child: Text(
+                              'Erro ao carregar deputados. $_errorMessage',
+                              style: TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: _deputies.length,
+                            itemBuilder: (context, index) {
+                              final deputy = _deputies[index];
+                              return ListTile(
+                                title: Text(deputy.name),
+                                subtitle:
+                                    Text('${deputy.party} - ${deputy.state}'),
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(deputy.photo),
+                                ),
+                                onTap: () {
+                                  // Implemente a navegação para os detalhes do deputado aqui
+                                },
+                              );
+                            },
+                          ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _clearSearch,

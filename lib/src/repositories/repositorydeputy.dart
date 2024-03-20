@@ -60,28 +60,30 @@ class DeputyRepository {
     }
   }
 
- Future<ParliamentarianDetails> getParliamentarianDetails(int id) async {
-  final String requestUrl = '$baseUrl/$id';
+  Future<ParliamentarianDetails> getParliamentarianDetails(int id) async {
+    final String requestUrl = '$baseUrl/$id';
 
-  try {
-    final response = await http.get(Uri.parse(requestUrl));
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic>? responseData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic>? responseData = json.decode(response.body);
 
-      if (responseData != null && responseData.containsKey('dados')) {
-        final parliamentarianDetails = ParliamentarianDetails.fromMap(responseData['dados']);
-        return parliamentarianDetails;
+        if (responseData != null && responseData.containsKey('dados')) {
+          final parliamentarianDetails =
+              ParliamentarianDetails.fromMap(responseData['dados']);
+          return parliamentarianDetails;
+        } else {
+          throw Exception(
+              'Erro ao carregar detalhes do parlamentar: dados não encontrados na resposta');
+        }
       } else {
-        throw Exception('Erro ao carregar detalhes do parlamentar: dados não encontrados na resposta');
+        throw Exception(
+            'Erro ao carregar detalhes do parlamentar: ${response.statusCode}');
       }
-    } else {
-      throw Exception('Erro ao carregar detalhes do parlamentar: ${response.statusCode}');
+    } catch (e) {
+      print('Erro ao carregar detalhes do parlamentar: $e');
+      throw Exception('Erro ao carregar detalhes do parlamentar: $e');
     }
-  } catch (e) {
-    print('Erro ao carregar detalhes do parlamentar: $e');
-    throw Exception('Erro ao carregar detalhes do parlamentar: $e');
   }
-}
-
 }

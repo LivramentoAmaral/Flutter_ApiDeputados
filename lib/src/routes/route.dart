@@ -18,19 +18,22 @@ class RoutesApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/details': (context) => DetailsDeputy(deputyRepository: DeputyRepository(), deputyId: 0,),
-        '/search': (context) => SearchPage(), // Adicionei a rota '/search
+        '/details': (context) => DetailsDeputy(
+              deputyRepository: DeputyRepository(),
+              deputyId: 0,
+            ),
+        '/search': (context) => SearchPage(),
         '/partySearch': (context) => PartySearchPage(),
         '/stateSearch': (context) => StateSearchPage(),
         '/nameSearch': (context) => NameSearchPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/details' && settings.arguments is int) {
-          final int deputyId = settings.arguments as int; 
+          final int deputyId = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) => DetailsDeputy(
               deputyRepository: DeputyRepository(),
-              deputyId: deputyId, 
+              deputyId: deputyId,
             ),
           );
         }
