@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
@@ -10,14 +9,14 @@ class DetailsDeputy extends StatelessWidget {
   const DetailsDeputy({
     Key? key,
     required this.deputyRepository,
-    required this.deputyId, required DeputyModel deputy,
+    required this.deputyId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DeputyModelId>(
-      future: deputyRepository.getDeputyById(deputyId),
-      builder: (context, AsyncSnapshot<DeputyModelId> snapshot) {
+    return FutureBuilder<ParliamentarianDetails>(
+      future: deputyRepository.getParliamentarianDetails(deputyId),
+      builder: (context, AsyncSnapshot<ParliamentarianDetails> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
@@ -27,32 +26,28 @@ class DetailsDeputy extends StatelessWidget {
             child: Text('Erro ao carregar deputado: ${snapshot.error}'),
           );
         } else if (snapshot.hasData) {
-          final DeputyModelId deputy = snapshot.data!;
+          final ParliamentarianDetails deputy = snapshot.data!;
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(deputy.nome),
+              title: Text(deputy.civilName ?? ''),
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // CircleAvatar(
-                  //   radius: 50,
-                  //   backgroundImage: NetworkImage(deputy.photo),
-                  // ),
                   SizedBox(height: 20),
                   Text(
                     'CPF: ${deputy.cpf ?? "CPF não disponível"}',
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    'Data de Falecimento: ${deputy.dataFalecimento ?? "Data de falecimento não disponível"}',
+                    'Data de Falecimento: ${deputy.deathDate ?? "Data de falecimento não disponível"}',
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    'Data de Nascimento: ${deputy.dataNascimento ?? "Data de nascimento não disponível"}',
+                    'Data de Nascimento: ${deputy.birthDate ?? "Data de nascimento não disponível"}',
                     style: TextStyle(fontSize: 18),
                   ),
                   // Continue adicionando os outros campos conforme necessário

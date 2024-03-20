@@ -41,6 +41,12 @@ class DeputyModel {
       biography: json['biografia'],
     );
   }
+
+  get dataNascimento => null;
+
+  get dataFalecimento => null;
+
+  get cpf => null;
 }
 
 
