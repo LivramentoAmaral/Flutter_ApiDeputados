@@ -67,9 +67,9 @@ class DeputyRepository {
       final response = await http.get(Uri.parse(requestUrl));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic>? responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = json.decode(response.body);
 
-        if (responseData != null && responseData.containsKey('dados')) {
+        if (responseData.containsKey('dados')) {
           final parliamentarianDetails =
               ParliamentarianDetails.fromMap(responseData['dados']);
           return parliamentarianDetails;
@@ -86,4 +86,6 @@ class DeputyRepository {
       throw Exception('Erro ao carregar detalhes do parlamentar: $e');
     }
   }
+
+  getDeputyById(int deputyId) {}
 }

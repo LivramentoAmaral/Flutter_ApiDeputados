@@ -79,11 +79,6 @@ class _NameSearchPageState extends State<NameSearchPage> {
     });
   }
 
-  void _clearSearch() {
-    _nameController.clear();
-    _loadDeputiesByName('');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,37 +111,24 @@ class _NameSearchPageState extends State<NameSearchPage> {
                           textAlign: TextAlign.center,
                         ),
                       )
-                    : _deputies.isEmpty
-                        ? Center(
-                            child: Text(
-                              'Erro ao carregar deputados. $_errorMessage',
-                              style: TextStyle(color: Colors.red),
-                              textAlign: TextAlign.center,
+                    : ListView.builder(
+                        itemCount: _deputies.length,
+                        itemBuilder: (context, index) {
+                          final deputy = _deputies[index];
+                          return ListTile(
+                            title: Text(deputy.name),
+                            subtitle: Text('${deputy.party} - ${deputy.state}'),
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(deputy.photo),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _deputies.length,
-                            itemBuilder: (context, index) {
-                              final deputy = _deputies[index];
-                              return ListTile(
-                                title: Text(deputy.name),
-                                subtitle:
-                                    Text('${deputy.party} - ${deputy.state}'),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(deputy.photo),
-                                ),
-                                onTap: () {
-                                  // Implemente a navegação para os detalhes do deputado aqui
-                                },
-                              );
+                            onTap: () {
+                              // Implemente a navegação para os detalhes do deputado aqui
                             },
-                          ),
+                          );
+                        },
+                      ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _clearSearch,
-        child: Icon(Icons.clear),
       ),
     );
   }

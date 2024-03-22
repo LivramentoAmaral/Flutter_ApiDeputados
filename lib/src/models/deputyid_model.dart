@@ -14,6 +14,8 @@ class ParliamentarianDetails {
   final String? birthCity;
   final String? education;
   final Map<String, dynamic>? office;
+  final String? urlFoto;
+  final String? party;
 
   ParliamentarianDetails({
     this.nickname,
@@ -31,7 +33,10 @@ class ParliamentarianDetails {
     this.birthCity,
     this.education,
     this.office,
+    this.urlFoto,
+    this.party,
   });
+
 
   factory ParliamentarianDetails.fromMap(Map<String, dynamic> map) {
     return ParliamentarianDetails(
@@ -50,6 +55,8 @@ class ParliamentarianDetails {
       birthCity: map['municipioNascimento'] ?? '',
       education: map['escolaridade'] ?? '',
       office: map['ultimoStatus']['gabinete'] ?? {},
+      urlFoto: map['ultimoStatus']['urlFoto'] ?? '',
+      party: map['ultimoStatus']['siglaPartido'] ?? '',
     );
   }
 

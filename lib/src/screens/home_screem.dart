@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamed(
       context,
       '/details',
-      arguments: deputy,
+      arguments: deputy.id,
     );
   }
 

@@ -19,7 +19,7 @@ class _StateSearchPageState extends State<StateSearchPage> {
   @override
   void initState() {
     super.initState();
-    _loadDeputiesByState('');
+    _loadDeputies('');
   }
 
   @override
@@ -29,25 +29,20 @@ class _StateSearchPageState extends State<StateSearchPage> {
     super.dispose();
   }
 
-  Future<void> _loadDeputiesByState(String state) async {
+  Future<void> _loadDeputies(String query) async {
     setState(() {
       _loading = true;
-      if (state.isNotEmpty) {
-        _errorMessage = '';
-      }
+      _errorMessage = ''; // Limpa a mensagem de erro ao iniciar a pesquisa
     });
     try {
       final deputies =
-          await _repository.getDeputies(state: state.toUpperCase());
+          await _repository.getDeputies(state: query.toUpperCase());
       if (mounted) {
         setState(() {
           _deputies = deputies;
-          if (_deputies.isEmpty && state.isNotEmpty) {
+          if (_deputies.isEmpty && query.isNotEmpty) {
             _errorMessage =
                 'Nenhum deputado encontrado. Por favor, digite a sigla do estado corretamente (ex: SP, RJ, MG).';
-          } else {
-            _errorMessage =
-                ''; // Limpa a mensagem de erro se deputados forem encontrados
           }
         });
       }
@@ -69,16 +64,22 @@ class _StateSearchPageState extends State<StateSearchPage> {
   }
 
   void _searchDeputies(String query) {
-    query = query.toLowerCase();
+    query = query.toUpperCase();
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      _loadDeputiesByState(query);
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      await _loadDeputies(query);
+      // Se a consulta estiver vazia, limpa a lista de deputados e carrega todos os deputados novamente
+      if (query.isEmpty) {
+        _clearSearch();
+        _loadDeputies('');
+      }
     });
   }
 
   void _clearSearch() {
-    _stateController.clear();
-    _loadDeputiesByState('');
+    setState(() {
+      _deputies.clear();
+    });
   }
 
   @override
@@ -105,45 +106,37 @@ class _StateSearchPageState extends State<StateSearchPage> {
           Expanded(
             child: _loading
                 ? Center(child: CircularProgressIndicator())
-                : _deputies.isEmpty && _errorMessage.isNotEmpty
+                : _deputies.isEmpty
                     ? Center(
-                        child: Text(
-                          _errorMessage,
-                          style: TextStyle(color: Colors.red),
-                          textAlign: TextAlign.center,
-                        ),
+                        child: _errorMessage.isNotEmpty
+                            ? Text(
+                                'Erro ao carregar deputados. $_errorMessage',
+                                style: TextStyle(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                'Nenhum deputado encontrado.',
+                                style: TextStyle(color: Colors.grey),
+                              ),
                       )
-                    : _deputies.isEmpty
-                        ? Center(
-                            child: Text(
-                              'Erro ao carregar deputados. $_errorMessage',
-                              style: TextStyle(color: Colors.red),
-                              textAlign: TextAlign.center,
+                    : ListView.builder(
+                        itemCount: _deputies.length,
+                        itemBuilder: (context, index) {
+                          final deputy = _deputies[index];
+                          return ListTile(
+                            title: Text(deputy.name),
+                            subtitle: Text('${deputy.party} - ${deputy.state}'),
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(deputy.photo),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _deputies.length,
-                            itemBuilder: (context, index) {
-                              final deputy = _deputies[index];
-                              return ListTile(
-                                title: Text(deputy.name),
-                                subtitle:
-                                    Text('${deputy.party} - ${deputy.state}'),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(deputy.photo),
-                                ),
-                                onTap: () {
-                                  // Implemente a navegação para os detalhes do deputado aqui
-                                },
-                              );
+                            onTap: () {
+                              // Implemente a navegação para os detalhes do deputado aqui
                             },
-                          ),
+                          );
+                        },
+                      ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _clearSearch,
-        child: Icon(Icons.clear),
       ),
     );
   }
