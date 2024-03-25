@@ -29,6 +29,14 @@ class _NameSearchPageState extends State<NameSearchPage> {
     super.dispose();
   }
 
+  void _viewDeputyDetails(DeputyModel deputy) {
+    Navigator.pushNamed(
+      context,
+      '/details',
+      arguments: deputy.id,
+    );
+  }
+
   Future<void> _loadDeputiesByName(String name) async {
     setState(() {
       _loading = true;
@@ -122,7 +130,7 @@ class _NameSearchPageState extends State<NameSearchPage> {
                               backgroundImage: NetworkImage(deputy.photo),
                             ),
                             onTap: () {
-                              // Implemente a navegação para os detalhes do deputado aqui
+                              _viewDeputyDetails(deputy);
                             },
                           );
                         },
