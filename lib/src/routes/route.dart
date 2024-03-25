@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
 import 'package:flutter_deputyapp/src/screens/home_screem.dart';
 import 'package:flutter_deputyapp/src/screens/search_deputy.dart';

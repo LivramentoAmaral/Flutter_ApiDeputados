@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
@@ -33,94 +35,95 @@ class DetailsDeputyPage extends StatelessWidget {
             );
           } else if (snapshot.hasData) {
             final deputy = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: CircleAvatar(
+            // Formatar a data de nascimento para o padrão brasileiro
+            final formattedBirthDate = DateFormat('dd/MM/yyyy')
+                .format(DateTime.parse('${deputy.birthDate}'));
+
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
                       radius: 50,
                       backgroundImage: NetworkImage(deputy.urlFoto ?? ''),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Nome:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Informações Pessoais',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'Nome: ${deputy.nickname}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                'Partido: ${deputy.party}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                'Sexo: ${deputy.sex == 'M' ? 'Masculino' : 'Feminino'}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Outras Informações',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'CPF: ${deputy.cpf}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                'Data de nascimento: $formattedBirthDate', // Utilize a data formatada
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                'Escolaridade: ${deputy.education}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '${deputy.nickname}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Partido:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Text(
-                    '${deputy.party}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Sexo:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Text(
-                    '${deputy.sex == 'M' ? 'Masculino' : 'Feminino'}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'CPF:${deputy.cpf}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Text(
-                    '${deputy.cpf}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Data de nascimento:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Text(
-                    '${deputy.birthDate}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Escolaridade: ${deputy.education}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-
-                  // Adicione outros detalhes conforme necessário
-                ],
+                  ],
+                ),
               ),
             );
           } else {
