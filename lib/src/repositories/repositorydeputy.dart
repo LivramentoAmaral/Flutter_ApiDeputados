@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
+import 'package:flutter_deputyapp/src/models/expenses_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 
@@ -87,5 +88,34 @@ class DeputyRepository {
     }
   }
 
-  getDeputyById(int deputyId) {}
+  Future<List<ExpensesModel>>getExpenses(int id) async {
+    final String requestUrl = '$baseUrl/$id/despesas';
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData.containsKey('dados')) {
+          final List<dynamic> data = responseData['dados'];
+          final List<ExpensesModel> expenses = [];
+
+          for (final item in data) {
+            final expense = ExpensesModel.fromMap(item);
+            expenses.add(expense);
+          }
+          return expenses;
+        } else {
+          throw Exception(
+              'Erro ao carregar despesas: dados não encontrados na resposta');
+        }
+      } else {
+        throw Exception('Erro ao carregar despesas: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar despesas: $e');
+      throw Exception('Erro ao carregar despesas: $e');
+    }
+  }
 }
