@@ -85,18 +85,20 @@ class _PartySearchPageState extends State<PartySearchPage> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () async {
       await _loadDeputies(query);
-      // Verifica se os resultados contêm a consulta atual
-      List<DeputyModel> filteredDeputies = _deputies.where((deputy) {
-        return deputy.party.toLowerCase().contains(query);
-      }).toList();
-      setState(() {
-        _deputies = filteredDeputies;
-      });
+      if (mounted) { // Verifica se o widget está montado
+        // Verifica se os resultados contêm a consulta atual
+        List<DeputyModel> filteredDeputies = _deputies.where((deputy) {
+          return deputy.party.toLowerCase().contains(query);
+        }).toList();
+        setState(() {
+          _deputies = filteredDeputies;
+        });
 
-      // Se a consulta estiver vazia, limpa a lista de deputados e carrega todos os deputados novamente
-      if (query.isEmpty) {
-        _clearSearch();
-        _loadDeputies('');
+        // Se a consulta estiver vazia, limpa a lista de deputados e carrega todos os deputados novamente
+        if (query.isEmpty) {
+          _clearSearch();
+          _loadDeputies('');
+        }
       }
     });
   }

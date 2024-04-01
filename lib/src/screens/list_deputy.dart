@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class ListDeputy extends StatefulWidget {
+  const ListDeputy({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _ListDeputyState createState() => _ListDeputyState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ListDeputyState extends State<ListDeputy> {
   final DeputyRepository _repository = DeputyRepository();
   List<DeputyModel> _deputies = [];
   List<DeputyModel> _filteredDeputies = [];

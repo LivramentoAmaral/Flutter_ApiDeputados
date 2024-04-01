@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
-import 'package:flutter_deputyapp/src/screens/home_screem.dart';
+import 'package:flutter_deputyapp/src/screens/home_page.dart';
+import 'package:flutter_deputyapp/src/screens/list_deputy.dart';
 import 'package:flutter_deputyapp/src/screens/search_deputy.dart';
 import 'package:flutter_deputyapp/src/screens/search_namedeputy.dart';
 import 'package:flutter_deputyapp/src/screens/search_party.dart';
@@ -17,6 +18,7 @@ class RoutesApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
+        '/listDeputy': (context) => ListDeputy(),
         '/details': (context) =>
             DetailsDeputyPage(), // Corrigindo a rota para DetailsDeputyPage
         '/search': (context) => SearchPage(),

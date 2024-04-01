@@ -88,7 +88,38 @@ class DeputyRepository {
     }
   }
 
-  Future<List<ExpensesModel>>getExpenses(int id) async {
+  Future<List<ExpensesModel>> getExpenses(int id, int year, int month) async {
+    final String requestUrl = '$baseUrl/$id/despesas?ano=$year&mes=$month';
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData.containsKey('dados')) {
+          final List<dynamic> data = responseData['dados'];
+          final List<ExpensesModel> expenses = [];
+
+          for (final item in data) {
+            final expense = ExpensesModel.fromMap(item);
+            expenses.add(expense);
+          }
+          return expenses;
+        } else {
+          throw Exception(
+              'Erro ao carregar despesas: dados não encontrados na resposta');
+        }
+      } else {
+        throw Exception('Erro ao carregar despesas: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar despesas: $e');
+      throw Exception('Erro ao carregar despesas: $e');
+    }
+  }
+
+  Future<List<ExpensesModel>> getAllExpenses(int id) async {
     final String requestUrl = '$baseUrl/$id/despesas';
 
     try {
