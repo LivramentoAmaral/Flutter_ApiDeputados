@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(bottom: 20.0),
         child: Center(
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton(
@@ -22,7 +22,9 @@ class HomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).canvasColor,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 40), // Ajuste a altura aqui
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -35,9 +37,10 @@ class HomePage extends StatelessWidget {
                       width: 200,
                       height: 200,
                     ),
-                    const SizedBox(
-                        height:
-                            5), // Ajuste o espaçamento entre a imagem e o texto
+                    const SizedBox(height: 10),
+                    const Icon(
+                        Icons.arrow_forward), // Adicionando o ícone da seta
+                    const SizedBox(height: 5),
                     const Text(
                       'Lista de Deputados',
                       style: TextStyle(fontSize: 18),
@@ -45,7 +48,7 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 20), // Adicionando espaço entre os botões
+              const SizedBox(height: 20), // Adicionando espaço entre os botões
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/partySearch');
@@ -53,7 +56,9 @@ class HomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).canvasColor,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 10), // Ajuste a altura aqui
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -66,9 +71,10 @@ class HomePage extends StatelessWidget {
                       width: 200,
                       height: 200,
                     ),
-                    const SizedBox(
-                        height:
-                            5), // Ajuste o espaçamento entre a imagem e o texto
+                    const SizedBox(height: 10),
+                    const Icon(
+                        Icons.arrow_forward), // Adicionando o ícone da seta
+                    const SizedBox(height: 5),
                     const Text(
                       'Lista de Comissões',
                       style: TextStyle(fontSize: 18),
