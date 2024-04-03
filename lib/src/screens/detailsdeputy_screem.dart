@@ -34,11 +34,11 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   @override
   void initState() {
     super.initState();
-    _loadAllExpenses(); // Carregar todas as despesas ao iniciar
+    // _loadAllExpenses(); // Carregar todas as despesas ao iniciar
   }
 
   Future<void> _loadAllExpenses() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
+    final int deputyId = ModalRoute.of(context)?.settings.arguments as int ?? 0;
     _expenses = await DeputyRepository().getAllExpenses(deputyId);
     setState(() {});
   }
