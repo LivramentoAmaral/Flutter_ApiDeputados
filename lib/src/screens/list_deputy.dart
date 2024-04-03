@@ -6,11 +6,13 @@ class ListDeputy extends StatefulWidget {
   const ListDeputy({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ListDeputyState createState() => _ListDeputyState();
 }
 
 class _ListDeputyState extends State<ListDeputy> {
   final DeputyRepository _repository = DeputyRepository();
+  // ignore: unused_field
   List<DeputyModel> _deputies = [];
   List<DeputyModel> _filteredDeputies = [];
 
@@ -28,6 +30,7 @@ class _ListDeputyState extends State<ListDeputy> {
         _filteredDeputies = deputies;
       });
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao carregar deputados: $e');
     }
   }
@@ -64,19 +67,19 @@ class _ListDeputyState extends State<ListDeputy> {
               backgroundImage: NetworkImage(deputy.photo),
             ),
             title: Text(deputy.name),
-            subtitle: Text('${deputy.party} - ${deputy.state}' ?? ''),
+            subtitle: Text('${deputy.party} - ${deputy.state}'),
           );
         },
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Container(
+        child: SizedBox(
           height: 50.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
                 onPressed: _navigateToSearchPage,
-                child: Text(
+                child: const Text(
                   'Ir para a Página de Busca',
                   style: TextStyle(color: Colors.blue),
                 ),

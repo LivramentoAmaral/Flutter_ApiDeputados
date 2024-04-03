@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
       ),
       body: Padding(
-        padding: EdgeInsets.only(bottom: 20.0),
+        padding: const EdgeInsets.only(bottom: 20.0),
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -18,8 +20,8 @@ class HomePage extends StatelessWidget {
                   Navigator.pushNamed(context, '/listDeputy');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).canvasColor,
-                  padding: EdgeInsets.symmetric(
+                  backgroundColor: Theme.of(context).canvasColor,
+                  padding: const EdgeInsets.symmetric(
                       horizontal: 40, vertical: 40), // Ajuste a altura aqui
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -33,24 +35,24 @@ class HomePage extends StatelessWidget {
                       width: 200,
                       height: 200,
                     ),
-                    SizedBox(
+                    const SizedBox(
                         height:
                             5), // Ajuste o espaçamento entre a imagem e o texto
-                    Text(
+                    const Text(
                       'Lista de Deputados',
                       style: TextStyle(fontSize: 18),
                     ),
                   ],
                 ),
               ),
-              SizedBox(width: 20), // Adicionando espaço entre os botões
+              const SizedBox(width: 20), // Adicionando espaço entre os botões
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/partySearch');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).canvasColor,
-                  padding: EdgeInsets.symmetric(
+                  backgroundColor: Theme.of(context).canvasColor,
+                  padding: const EdgeInsets.symmetric(
                       horizontal: 40, vertical: 10), // Ajuste a altura aqui
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -64,10 +66,10 @@ class HomePage extends StatelessWidget {
                       width: 200,
                       height: 200,
                     ),
-                    SizedBox(
+                    const SizedBox(
                         height:
                             5), // Ajuste o espaçamento entre a imagem e o texto
-                    Text(
+                    const Text(
                       'Lista de Comissões',
                       style: TextStyle(fontSize: 18),
                     ),

@@ -4,6 +4,8 @@ import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
 class NameSearchPage extends StatefulWidget {
+  const NameSearchPage({super.key});
+
   @override
   _NameSearchPageState createState() => _NameSearchPageState();
 }
@@ -11,7 +13,7 @@ class NameSearchPage extends StatefulWidget {
 class _NameSearchPageState extends State<NameSearchPage> {
   final DeputyRepository _repository = DeputyRepository();
   List<DeputyModel> _deputies = [];
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   String _errorMessage = '';
   bool _loading = false;
   Timer? _debounce;
@@ -91,7 +93,7 @@ class _NameSearchPageState extends State<NameSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesquisar por Nome do Deputado'),
+        title: const Text('Pesquisar por Nome do Deputado'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -110,12 +112,12 @@ class _NameSearchPageState extends State<NameSearchPage> {
           ),
           Expanded(
             child: _loading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : _deputies.isEmpty && _errorMessage.isNotEmpty
                     ? Center(
                         child: Text(
                           _errorMessage,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
                         ),
                       )

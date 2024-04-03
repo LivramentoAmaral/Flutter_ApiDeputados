@@ -4,6 +4,8 @@ import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
 class PartySearchPage extends StatefulWidget {
+  const PartySearchPage({super.key});
+
   @override
   _PartySearchPageState createState() => _PartySearchPageState();
 }
@@ -11,7 +13,7 @@ class PartySearchPage extends StatefulWidget {
 class _PartySearchPageState extends State<PartySearchPage> {
   final DeputyRepository _repository = DeputyRepository();
   List<DeputyModel> _deputies = [];
-  TextEditingController _partyController = TextEditingController();
+  final TextEditingController _partyController = TextEditingController();
   String _errorMessage = '';
   bool _loading = false;
   Timer? _debounce;
@@ -113,7 +115,7 @@ class _PartySearchPageState extends State<PartySearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesquisar por Sigla do Partido'),
+        title: const Text('Pesquisar por Sigla do Partido'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -132,12 +134,12 @@ class _PartySearchPageState extends State<PartySearchPage> {
           ),
           Expanded(
             child: _loading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : _deputies.isEmpty && _errorMessage.isNotEmpty
                     ? Center(
                         child: Text(
                           _errorMessage,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -145,7 +147,7 @@ class _PartySearchPageState extends State<PartySearchPage> {
                         ? Center(
                             child: Text(
                               'Erro ao carregar deputados. $_errorMessage',
-                              style: TextStyle(color: Colors.red),
+                              style: const TextStyle(color: Colors.red),
                               textAlign: TextAlign.center,
                             ),
                           )

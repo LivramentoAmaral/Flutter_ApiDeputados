@@ -8,6 +8,8 @@ import 'package:flutter_deputyapp/src/screens/search_party.dart';
 import 'package:flutter_deputyapp/src/screens/search_state.dart';
 
 class RoutesApp extends StatelessWidget {
+  const RoutesApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,20 +19,21 @@ class RoutesApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
-        '/listDeputy': (context) => ListDeputy(),
+        '/': (context) => const HomePage(),
+        '/listDeputy': (context) => const ListDeputy(),
         '/details': (context) =>
-            DetailsDeputyPage(), // Corrigindo a rota para DetailsDeputyPage
-        '/search': (context) => SearchPage(),
-        '/partySearch': (context) => PartySearchPage(),
-        '/stateSearch': (context) => StateSearchPage(),
-        '/nameSearch': (context) => NameSearchPage(),
+            const DetailsDeputyPage(), // Corrigindo a rota para DetailsDeputyPage
+        '/search': (context) => const SearchPage(),
+        '/partySearch': (context) => const PartySearchPage(),
+        '/stateSearch': (context) => const StateSearchPage(),
+        '/nameSearch': (context) => const NameSearchPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/details' && settings.arguments is int) {
+          // ignore: unused_local_variable
           final int deputyId = settings.arguments as int;
           return MaterialPageRoute(
-            builder: (context) => DetailsDeputyPage(),
+            builder: (context) => const DetailsDeputyPage(),
           );
         }
         return null;

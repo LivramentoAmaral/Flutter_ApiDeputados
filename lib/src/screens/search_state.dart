@@ -4,6 +4,8 @@ import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 import 'package:flutter_deputyapp/src/repositories/repositorydeputy.dart';
 
 class StateSearchPage extends StatefulWidget {
+  const StateSearchPage({super.key});
+
   @override
   _StateSearchPageState createState() => _StateSearchPageState();
 }
@@ -11,7 +13,7 @@ class StateSearchPage extends StatefulWidget {
 class _StateSearchPageState extends State<StateSearchPage> {
   final DeputyRepository _repository = DeputyRepository();
   List<DeputyModel> _deputies = [];
-  TextEditingController _stateController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
   String _errorMessage = '';
   bool _loading = false;
   Timer? _debounce;
@@ -94,7 +96,7 @@ class _StateSearchPageState extends State<StateSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesquisar por Sigla do Estado (UF)'),
+        title: const Text('Pesquisar por Sigla do Estado (UF)'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -113,16 +115,16 @@ class _StateSearchPageState extends State<StateSearchPage> {
           ),
           Expanded(
             child: _loading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : _deputies.isEmpty
                     ? Center(
                         child: _errorMessage.isNotEmpty
                             ? Text(
                                 'Erro ao carregar deputados. $_errorMessage',
-                                style: TextStyle(color: Colors.red),
+                                style: const TextStyle(color: Colors.red),
                                 textAlign: TextAlign.center,
                               )
-                            : Text(
+                            : const Text(
                                 'Nenhum deputado encontrado.',
                                 style: TextStyle(color: Colors.grey),
                               ),
