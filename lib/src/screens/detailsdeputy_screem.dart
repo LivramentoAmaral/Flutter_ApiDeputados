@@ -8,6 +8,7 @@ class DetailsDeputyPage extends StatefulWidget {
   const DetailsDeputyPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _DetailsDeputyPageState createState() => _DetailsDeputyPageState();
 }
 
@@ -38,7 +39,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   }
 
   Future<void> _loadAllExpenses() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int ?? 0;
+    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
     _expenses = await DeputyRepository().getAllExpenses(deputyId);
     setState(() {});
   }
@@ -72,6 +73,8 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
             final deputy = snapshot.data!;
             final formattedBirthDate = DateFormat('dd/MM/yyyy')
                 .format(DateTime.parse('${deputy.birthDate}'));
+
+            double totalExpenses = _calculateTotalExpenses();
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,51 +164,104 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DropdownButton<String>(
-                            hint: const Text('Selecione o mês'),
-                            value: _selectedMonth != null
-                                ? _months[_selectedMonth! - 1]
-                                : null,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedMonth = _months.indexOf(newValue!) + 1;
-                                _selectedYear =
-                                    null; // Reset year when month changes
-                                _updateExpenses(); // Atualizar despesas quando o mês muda
-                              });
-                            },
-                            items: _months.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .center, // Centraliza os elementos na vertical
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center, // Centraliza os elementos na horizontal
+                                        children: [
+                                          DropdownButton<String>(
+                                            hint: const Text('Selecione o mês'),
+                                            value: _selectedMonth != null
+                                                ? _months[_selectedMonth! - 1]
+                                                : null,
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                _selectedMonth =
+                                                    _months.indexOf(newValue!) +
+                                                        1;
+                                                _updateExpensesIfNeeded();
+                                              });
+                                            },
+                                            items: _months.map((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          DropdownButton<int>(
+                                            hint: const Text('Selecione o ano'),
+                                            value: _selectedYear,
+                                            onChanged: (int? newValue) {
+                                              setState(() {
+                                                _selectedYear = newValue;
+                                                _updateExpensesIfNeeded();
+                                              });
+                                            },
+                                            items: List.generate(
+                                              10,
+                                              (index) =>
+                                                  DateTime.now().year - index,
+                                            ).map((int value) {
+                                              return DropdownMenuItem<int>(
+                                                value: value,
+                                                child: Text('$value'),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center, // Centraliza os elementos na horizontal
+                                        children: [
+                                          const Text(
+                                            'Valor Total das dispesas: ',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          const Text(
+                                            'R\$ ',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            // ignore: unnecessary_string_interpolations
+                                            "${totalExpenses.toStringAsFixed(2)}", // Aqui é onde formatamos o valor com duas casas decimais
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 10),
-                          DropdownButton<int>(
-                            hint: const Text('Selecione o ano'),
-                            value: _selectedYear,
-                            onChanged: (int? newValue) {
-                              setState(() {
-                                _selectedYear = newValue;
-                                _updateExpenses(); // Atualizar despesas quando o ano muda
-                              });
-                            },
-                            items: List.generate(
-                              10,
-                              (index) => DateTime.now().year - index,
-                            ).map((int value) {
-                              return DropdownMenuItem<int>(
-                                value: value,
-                                child: Text('$value'),
-                              );
-                            }).toList(),
-                          ),
-                        ],
+                        ),
                       ),
+
                       SizedBox(
                         height: 150,
                         child: _expenses != null
@@ -318,23 +374,26 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     );
   }
 
-  Future<void> _updateExpenses() async {
+  Future<void> _updateExpensesIfNeeded() async {
     final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
     if (_selectedMonth != null && _selectedYear != null) {
-      _expenses = await DeputyRepository().getExpensesByMonthAndYear(
-        deputyId,
-        _selectedYear!,
-        _selectedMonth!,
-      );
-    } else {
-      await _loadAllExpenses(); // Carregar todas as despesas
+      if (_expenses == null) {
+        _expenses = [];
+      }
+      await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
     }
+  }
+
+  Future<void> _updateExpenses(int deputyId, int year, int month) async {
+    _expenses = await DeputyRepository()
+        .getExpensesByMonthAndYear(deputyId, year, month);
     setState(() {});
   }
 
   Widget _formatExpenseValue(double? value) {
     if (value != null) {
-      String stringValue = value.toString();
+      String stringValue = value.toStringAsFixed(
+          2); // Formata o valor para ter sempre duas casas decimais após o ponto
       List<String> parts = stringValue.split('.');
       if (parts.length > 1) {
         if (parts[1].length == 1) {
@@ -387,5 +446,19 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
         fontSize: 16,
       ),
     );
+  }
+
+  double _calculateTotalExpenses() {
+    double total = 0;
+    if (_expenses != null) {
+      for (var expense in _expenses!) {
+        total += expense.valorLiquido;
+
+        if (total == 0) {
+          return 0;
+        }
+      }
+    }
+    return total;
   }
 }

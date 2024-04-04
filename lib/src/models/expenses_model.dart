@@ -58,4 +58,6 @@ class ExpensesModel {
       valorLiquido: map['valorLiquido'] as double,
     );
   }
+
+  void updateExpenses(List<ExpensesModel> expenses) {}
 }

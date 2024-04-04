@@ -151,7 +151,13 @@ class DeputyRepository {
   }
 
   Future<List<ExpensesModel>> getExpensesByMonthAndYear(
-      int id, int year, int month) async {
+      int id, int year, int month) 
+  async {
+      if (month == 0 && year == 0) {
+      return getAllExpenses(id);  
+      }
+     
+
     final String requestUrl = '$baseUrl/$id/despesas?ano=$year&mes=$month';
 
     try {
