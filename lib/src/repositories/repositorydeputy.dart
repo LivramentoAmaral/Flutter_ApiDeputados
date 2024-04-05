@@ -136,9 +136,6 @@ class DeputyRepository {
 
     try {
       final response = await http.get(Uri.parse(requestUrl));
-
-      print(response.body);
-
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
 
