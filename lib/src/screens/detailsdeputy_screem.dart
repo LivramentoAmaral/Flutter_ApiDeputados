@@ -33,8 +33,9 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   ];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAllExpenses();
   }
 
   Future<void> _loadAllExpenses() async {
@@ -82,6 +83,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                 Expanded(
                   child: ListView(
                     children: [
+                      // Informações pessoais
                       Center(
                         child: CircleAvatar(
                           radius: 100,
@@ -106,6 +108,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      // Dados pessoais do deputado
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Container(
@@ -146,6 +149,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      // Despesas
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: Row(
@@ -163,104 +167,86 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      // Filtros de mês e ano
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment
-                                        .center, // Centraliza os elementos na vertical
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .center, // Centraliza os elementos na horizontal
-                                        children: [
-                                          DropdownButton<String>(
-                                            hint: const Text('Selecione o mês'),
-                                            value: _selectedMonth != null
-                                                ? _months[_selectedMonth! - 1]
-                                                : null,
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                _selectedMonth =
-                                                    _months.indexOf(newValue!) +
-                                                        1;
-                                                _updateExpensesIfNeeded();
-                                              });
-                                            },
-                                            items: _months.map((String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              );
-                                            }).toList(),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          DropdownButton<int>(
-                                            hint: const Text('Selecione o ano'),
-                                            value: _selectedYear,
-                                            onChanged: (int? newValue) {
-                                              setState(() {
-                                                _selectedYear = newValue;
-                                                _updateExpensesIfNeeded();
-                                              });
-                                            },
-                                            items: List.generate(
-                                              10,
-                                              (index) =>
-                                                  DateTime.now().year - index,
-                                            ).map((int value) {
-                                              return DropdownMenuItem<int>(
-                                                value: value,
-                                                child: Text('$value'),
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .center, // Centraliza os elementos na horizontal
-                                        children: [
-                                          const Text(
-                                            'Valor Total das dispesas: ',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                          const Text(
-                                            'R\$ ',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.green,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            // ignore: unnecessary_string_interpolations
-                                            "${totalExpenses.toStringAsFixed(2)}", // Aqui é onde formatamos o valor com duas casas decimais
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              DropdownButton<String>(
+                                hint: const Text('Selecione o mês'),
+                                value: _selectedMonth != null
+                                    ? _months[_selectedMonth! - 1]
+                                    : null,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedMonth =
+                                        _months.indexOf(newValue!) + 1;
+                                    _updateExpensesIfNeeded();
+                                  });
+                                },
+                                items: _months.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(width: 10),
+                              DropdownButton<int>(
+                                hint: const Text('Selecione o ano'),
+                                value: _selectedYear,
+                                onChanged: (int? newValue) {
+                                  setState(() {
+                                    _selectedYear = newValue;
+                                    _updateExpensesIfNeeded();
+                                  });
+                                },
+                                items: List.generate(
+                                  10,
+                                  (index) => DateTime.now().year - index,
+                                ).map((int value) {
+                                  return DropdownMenuItem<int>(
+                                    value: value,
+                                    child: Text('$value'),
+                                  );
+                                }).toList(),
                               ),
                             ],
                           ),
                         ),
                       ),
-
+                      // Total das despesas
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Valor Total das despesas: ',
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                          const Text(
+                            'R\$ ',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            // ignore: unnecessary_string_interpolations
+                            "${totalExpenses.toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Lista de despesas
                       SizedBox(
                         height: 150,
                         child: _expenses != null
@@ -278,70 +264,65 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                                     scrollDirection: Axis.horizontal,
                                     itemCount: _expenses!.length,
                                     itemBuilder: (context, index) {
-                                      final expense = _expenses![index];
-                                      final formattedDate =
-                                          DateFormat('dd/MM/yyyy').format(
-                                        DateTime.parse(expense.dataDocumento),
-                                      );
-                                      return Container(
-                                        margin: const EdgeInsets.only(
-                                          right: 8,
-                                          bottom: 8,
-                                          top: 8,
-                                          left: 10,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Descrição: ${expense.tipoDespesa}',
-                                              style:
-                                                  const TextStyle(fontSize: 16)
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                      if (_expenses!.isEmpty) {
+                                        return const Center(
+                                          child: Text(
+                                            'Sem despesas no período',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.grey,
                                             ),
-                                            _formatExpenseValue(
-                                                expense.valorLiquido),
-                                            Text(
-                                                'Tipo da despesa: ${expense.tipoDespesa} '),
-                                            Text(
-                                                'Data do Documento: $formattedDate')
-                                          ],
-                                        ),
-                                      );
+                                          ),
+                                        );
+                                      } else {
+                                        final expense = _expenses![index];
+                                        final formattedDate =
+                                            DateFormat('dd/MM/yyyy').format(
+                                          DateTime.parse(expense.dataDocumento),
+                                        );
+                                        return Container(
+                                          margin: const EdgeInsets.only(
+                                            right: 8,
+                                            bottom: 8,
+                                            top: 8,
+                                            left: 10,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Descrição: ${expense.tipoDespesa}',
+                                                style: const TextStyle(
+                                                        fontSize: 16)
+                                                    .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                              ),
+                                              _formatExpenseValue(
+                                                  expense.valorLiquido),
+                                              Text(
+                                                  'Tipo da despesa: ${expense.tipoDespesa} '),
+                                              Text(
+                                                  'Data do Documento: $formattedDate')
+                                            ],
+                                          ),
+                                        );
+                                      }
                                     },
                                   )
-                            : SizedBox(
-                                child: FutureBuilder(
-                                  future: _loadAllExpenses(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    } else {
-                                      // Aqui você pode retornar qualquer widget que deseja renderizar após o carregamento das despesas
-                                      return const SizedBox
-                                          .shrink(); // Aqui estou retornando um SizedBox vazio, você pode ajustar conforme sua necessidade
-                                    }
-                                  },
-                                ),
-                              ),
-                      ), // Se _expenses for null, retorna um SizedBox vazio
-
+                            : const SizedBox.shrink(),
+                      ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () async {
@@ -374,19 +355,24 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   }
 
   Future<void> _updateExpensesIfNeeded() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int ?? 0;
+    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
     if (_selectedMonth != null && _selectedYear != null) {
-      _expenses ??= [];
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
     }
-
-    await _loadAllExpenses();
   }
 
   Future<void> _updateExpenses(int deputyId, int year, int month) async {
-    _expenses = await DeputyRepository()
-        .getExpensesByMonthAndYear(deputyId, year, month);
-    setState(() {});
+    try {
+      final List<ExpensesModel> updatedExpenses = await DeputyRepository()
+          .getExpensesByMonthAndYear(deputyId, year, month);
+      setState(() {
+        _expenses = updatedExpenses;
+      });
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao atualizar despesas: $e');
+      // Trate o erro conforme necessário
+    }
   }
 
   Widget _formatExpenseValue(double? value) {
@@ -452,10 +438,6 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     if (_expenses != null) {
       for (var expense in _expenses!) {
         total += expense.valorLiquido;
-
-        if (total == 0) {
-          return 0;
-        }
       }
     }
     return total;

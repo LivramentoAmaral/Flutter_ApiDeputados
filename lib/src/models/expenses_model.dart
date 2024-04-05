@@ -38,7 +38,8 @@ class ExpensesModel {
   });
 
   factory ExpensesModel.fromMap(Map<String, dynamic> map) {
-    return ExpensesModel(
+    var expensesModel = ExpensesModel(
+      
       ano: map['ano'] as int ?? 0,
       cnpjCpfFornecedor: map['cnpjCpfFornecedor'] as String ?? '',
       codDocumento: map['codDocumento'] as int ?? 0,
@@ -59,5 +60,6 @@ class ExpensesModel {
       valorGlosa: map['valorGlosa'] as double ?? 0.0,
       valorLiquido: map['valorLiquido'] as double ?? 0.0,
     );
+    return expensesModel;
   }
 }
