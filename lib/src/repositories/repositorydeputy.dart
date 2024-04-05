@@ -120,26 +120,34 @@ class DeputyRepository {
   }
 
   Future<List<ExpensesModel>> getAllExpenses(int id) async {
-    final String requestUrl = '$baseUrl/$id/despesas';
-
+    final String requestUrl = '$baseUrl/$id/despesas?itens=1000';
     try {
       final response = await http.get(Uri.parse(requestUrl));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final dynamic responseData = json.decode(response.body);
 
-        if (responseData.containsKey('dados')) {
-          final List<dynamic> data = responseData['dados'];
+        if (responseData != null &&
+            responseData is Map &&
+            responseData.containsKey('dados')) {
+          final List<dynamic>? data = responseData['dados'];
           final List<ExpensesModel> expenses = [];
 
-          for (final item in data) {
-            final expense = ExpensesModel.fromMap(item);
-            expenses.add(expense);
+          if (data != null) {
+            for (final item in data) {
+              if (item is Map<String, dynamic>) {
+                final expense = ExpensesModel.fromMap(item);
+                if (expense != null) {
+                  // Certifica-se de que o modelo não é nulo
+                  print(expense);
+                  expenses.add(expense);
+                }
+              }
+            }
           }
           return expenses;
         } else {
-          throw Exception(
-              'Erro ao carregar despesas: dados não encontrados na resposta');
+          return []; // Retorna uma lista vazia se não houver dados
         }
       } else {
         throw Exception('Erro ao carregar despesas: ${response.statusCode}');
@@ -151,12 +159,10 @@ class DeputyRepository {
   }
 
   Future<List<ExpensesModel>> getExpensesByMonthAndYear(
-      int id, int year, int month) 
-  async {
-      if (month == 0 && year == 0) {
-      return getAllExpenses(id);  
-      }
-     
+      int id, int year, int month) async {
+    if (month == 0 && year == 0) {
+      return getAllExpenses(id);
+    }
 
     final String requestUrl = '$baseUrl/$id/despesas?ano=$year&mes=$month';
 

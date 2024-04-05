@@ -35,7 +35,6 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   @override
   void initState() {
     super.initState();
-    // _loadAllExpenses(); // Carregar todas as despesas ao iniciar
   }
 
   Future<void> _loadAllExpenses() async {
@@ -375,13 +374,13 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   }
 
   Future<void> _updateExpensesIfNeeded() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
+    final int deputyId = ModalRoute.of(context)?.settings.arguments as int ?? 0;
     if (_selectedMonth != null && _selectedYear != null) {
-      if (_expenses == null) {
-        _expenses = [];
-      }
+      _expenses ??= [];
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
     }
+
+    await _loadAllExpenses();
   }
 
   Future<void> _updateExpenses(int deputyId, int year, int month) async {
