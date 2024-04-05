@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:flutter_deputyapp/src/models/commission_model.dart';
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:flutter_deputyapp/src/models/expenses_model.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +9,8 @@ import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 
 class DeputyRepository {
   final String baseUrl = 'https://dadosabertos.camara.leg.br/api/v2/deputados';
+  final String baseUrlComission =
+      'https://dadosabertos.camara.leg.br/api/v2/frentes';
 
   Future<List<DeputyModel>> getDeputies(
       {String? name, String? party, String? state, int? id}) async {
@@ -149,6 +152,7 @@ class DeputyRepository {
             for (final item in data) {
               if (item is Map<String, dynamic>) {
                 final expense = ExpensesModel.fromMap(item);
+                // ignore: unnecessary_null_comparison
                 if (expense != null) {
                   expenses.add(expense);
                 }
@@ -166,5 +170,43 @@ class DeputyRepository {
       print('Erro ao carregar despesas: $e');
       throw Exception('Erro ao carregar despesas: $e');
     }
+  }
+
+  Future<List<ComissionModel>> getCommissions() async {
+    final String requestUrl = baseUrlComission;
+    List<ComissionModel> commissions = [];
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData != null &&
+            responseData is Map &&
+            responseData.containsKey('dados')) {
+          final List<dynamic>? data = responseData['dados'];
+
+          if (data != null) {
+            for (final item in data) {
+              if (item is Map<String, dynamic>) {
+                final commission = ComissionModel.fromJson(item);
+                commissions.add(commission); // Adiciona a comissão à lista
+              }
+            }
+          }
+        } else {
+          throw Exception(
+              'Erro ao carregar comissões: dados não encontrados na resposta');
+        }
+      } else {
+        throw Exception('Erro ao carregar comissões: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar comissões: $e');
+      throw Exception('Erro ao carregar comissões: $e');
+    }
+
+    return commissions; // Retorna a lista de comissões
   }
 }

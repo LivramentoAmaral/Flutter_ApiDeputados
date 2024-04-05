@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_deputyapp/src/screens/comissions_depurty.dart';
 import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
 import 'package:flutter_deputyapp/src/screens/home_page.dart';
 import 'package:flutter_deputyapp/src/screens/list_deputy.dart';
@@ -20,6 +21,7 @@ class RoutesApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
+        '/comissions': (context) => ComissionsPage(), // Adicione a rota '/comissions
         '/listDeputy': (context) => const ListDeputy(),
         '/details': (context) =>
             const DetailsDeputyPage(), // Corrigindo a rota para DetailsDeputyPage
