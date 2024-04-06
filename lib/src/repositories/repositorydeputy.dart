@@ -5,6 +5,7 @@ import 'package:flutter_deputyapp/src/models/comission_details_model.dart';
 import 'package:flutter_deputyapp/src/models/commission_model.dart';
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:flutter_deputyapp/src/models/expenses_model.dart';
+import 'package:flutter_deputyapp/src/models/members_comission_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_deputyapp/src/models/deputy_model.dart';
 
@@ -239,6 +240,39 @@ class DeputyRepository {
     } catch (e) {
       print('Erro ao carregar detalhes da comissão: $e');
       throw Exception('Erro ao carregar detalhes da comissão: $e');
+    }
+  }
+
+  Future<List<MembersComissionModel>> getCommissionMembers(int id) async {
+    final String requestUrl = '$baseUrlComission/$id/membros';
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData != null &&
+            responseData is Map &&
+            responseData.containsKey('dados')) {
+          final List<dynamic> data = responseData['dados'];
+
+          List<MembersComissionModel> members = data
+              .map<MembersComissionModel>(
+                  (memberJson) => MembersComissionModel.fromMap(memberJson))
+              .toList();
+          return members;
+        } else {
+          throw Exception(
+              'Erro ao carregar membros da comissão: dados não encontrados na resposta');
+        }
+      } else {
+        throw Exception(
+            'Erro ao carregar membros da comissão: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar membros da comissão: $e');
+      throw Exception('Erro ao carregar membros da comissão: $e');
     }
   }
 }

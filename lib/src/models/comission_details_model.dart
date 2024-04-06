@@ -84,4 +84,8 @@ class Coordinator {
       urlFoto: map['urlFoto'] ?? '',
     );
   }
+
+  get photo => null;
+
+  get party => null;
 }
