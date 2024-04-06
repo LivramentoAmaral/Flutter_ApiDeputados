@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_deputyapp/src/screens/comissions_depurty.dart';
+import 'package:flutter_deputyapp/src/screens/details_comissions_deputy.dart';
 import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
 import 'package:flutter_deputyapp/src/screens/home_page.dart';
 import 'package:flutter_deputyapp/src/screens/list_deputy.dart';
@@ -9,7 +10,8 @@ import 'package:flutter_deputyapp/src/screens/search_party.dart';
 import 'package:flutter_deputyapp/src/screens/search_state.dart';
 
 class RoutesApp extends StatelessWidget {
-  const RoutesApp({super.key});
+  // ignore: use_key_in_widget_constructors
+  const RoutesApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +23,11 @@ class RoutesApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
-        '/comissions': (context) => ComissionsPage(), // Adicione a rota '/comissions
+        '/comissions': (context) => ComissionsPage(),
         '/listDeputy': (context) => const ListDeputy(),
-        '/details': (context) =>
-            const DetailsDeputyPage(), // Corrigindo a rota para DetailsDeputyPage
+        '/details': (context) => const DetailsDeputyPage(),
+        '/detailscomissions': (context) =>
+            const ComissionDetailsPage(), // Corrigindo a rota para ComissionDetailsPage
         '/search': (context) => const SearchPage(),
         '/partySearch': (context) => const PartySearchPage(),
         '/stateSearch': (context) => const StateSearchPage(),
@@ -32,12 +35,18 @@ class RoutesApp extends StatelessWidget {
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/details' && settings.arguments is int) {
-          // ignore: unused_local_variable
           final int deputyId = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) => const DetailsDeputyPage(),
           );
+        } else if (settings.name == '/detailscomissions' &&
+            settings.arguments is int) {
+          final int comissionId = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => const ComissionDetailsPage(),
+          );
         }
+
         return null;
       },
     );

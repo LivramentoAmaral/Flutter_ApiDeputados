@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:flutter_deputyapp/src/models/comission_details_model.dart';
 import 'package:flutter_deputyapp/src/models/commission_model.dart';
 import 'package:flutter_deputyapp/src/models/deputyid_model.dart';
 import 'package:flutter_deputyapp/src/models/expenses_model.dart';
@@ -208,5 +209,36 @@ class DeputyRepository {
     }
 
     return commissions; // Retorna a lista de comissões
+  }
+
+  Future<ComissionDetailsModel> getCommissionDetails(int id) async {
+    final String requestUrl =
+        '$baseUrlComission/$id'; // Adicione o ID da comissão à URL de requisição
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData != null &&
+            responseData is Map &&
+            responseData.containsKey('dados')) {
+          final Map<String, dynamic> data = responseData['dados'];
+
+          return ComissionDetailsModel.fromMap(
+              data); // Retorna os detalhes da comissão convertidos para o modelo ComissionDetailsModel
+        } else {
+          throw Exception(
+              'Erro ao carregar detalhes da comissão: dados não encontrados na resposta');
+        }
+      } else {
+        throw Exception(
+            'Erro ao carregar detalhes da comissão: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar detalhes da comissão: $e');
+      throw Exception('Erro ao carregar detalhes da comissão: $e');
+    }
   }
 }

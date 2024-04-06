@@ -44,12 +44,23 @@ class _ComissionsPageState extends State<ComissionsPage> {
               itemCount: commissions.length,
               itemBuilder: (context, index) {
                 final commission = commissions[index];
-                return Card(
-                  elevation: 3, // Adiciona sombra ao card
-                  margin: EdgeInsets.all(8), // Define margem ao redor do card
-                  child: ListTile(
-                    leading: Icon(Icons.people), // Ícone para cada comissão
-                    title: Text(commission.titulo),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/detailscomissions',
+                      arguments: commission
+                          .id, // Passando o ID da comissão como argumento
+                    );
+                  },
+                  child: Card(
+                    elevation: 3,
+                    margin: EdgeInsets.all(8),
+                    child: ListTile(
+                      leading: Icon(Icons.people),
+                      title: Text(commission.titulo),
+                    ),
+                    
                   ),
                 );
               },
