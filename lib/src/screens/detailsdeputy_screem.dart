@@ -8,7 +8,6 @@ class DetailsDeputyPage extends StatefulWidget {
   const DetailsDeputyPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _DetailsDeputyPageState createState() => _DetailsDeputyPageState();
 }
 
@@ -174,44 +173,56 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              DropdownButton<String>(
-                                hint: const Text('Selecione o mês'),
-                                value: _selectedMonth != null
-                                    ? _months[_selectedMonth! - 1]
-                                    : null,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _selectedMonth =
-                                        _months.indexOf(newValue!) + 1;
-                                    _updateExpensesIfNeeded();
-                                  });
-                                },
-                                items: _months.map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
+                              Container(
+                                width:
+                                    150, // Defina um tamanho adequado para o DropdownButton
+                                child: DropdownButton<String>(
+                                  isExpanded:
+                                      true, // Isso permite que o DropdownButton se expanda horizontalmente
+                                  hint: const Text('Selecione o mês'),
+                                  value: _selectedMonth != null
+                                      ? _months[_selectedMonth! - 1]
+                                      : null,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedMonth =
+                                          _months.indexOf(newValue!) + 1;
+                                      _updateExpensesIfNeeded();
+                                    });
+                                  },
+                                  items: _months.map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                               const SizedBox(width: 10),
-                              DropdownButton<int>(
-                                hint: const Text('Selecione o ano'),
-                                value: _selectedYear,
-                                onChanged: (int? newValue) {
-                                  setState(() {
-                                    _selectedYear = newValue;
-                                    _updateExpensesIfNeeded();
-                                  });
-                                },
-                                items: List.generate(
-                                  10,
-                                  (index) => DateTime.now().year - index,
-                                ).map((int value) {
-                                  return DropdownMenuItem<int>(
-                                    value: value,
-                                    child: Text('$value'),
-                                  );
-                                }).toList(),
+                              Container(
+                                width:
+                                    150, // Defina um tamanho adequado para o DropdownButton
+                                child: DropdownButton<int>(
+                                  isExpanded:
+                                      true, // Isso permite que o DropdownButton se expanda horizontalmente
+                                  hint: const Text('Selecione o ano'),
+                                  value: _selectedYear,
+                                  onChanged: (int? newValue) {
+                                    setState(() {
+                                      _selectedYear = newValue;
+                                      _updateExpensesIfNeeded();
+                                    });
+                                  },
+                                  items: List.generate(
+                                    10,
+                                    (index) => DateTime.now().year - index,
+                                  ).map((int value) {
+                                    return DropdownMenuItem<int>(
+                                      value: value,
+                                      child: Text('$value'),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ],
                           ),
@@ -246,82 +257,91 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                           ),
                         ],
                       ),
-                      // Lista de despesas
-                      SizedBox(
-                        height: 150,
-                        child: _expenses != null
-                            ? _expenses!.isEmpty
-                                ? const Center(
-                                    child: Text(
-                                      'Nenhuma despesa encontrada.',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: _expenses!.length,
-                                    itemBuilder: (context, index) {
-                                      if (_expenses!.isEmpty) {
-                                        return const Center(
-                                          child: Text(
-                                            'Sem despesas no período',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.grey,
-                                            ),
+                      // Lista de despesas com RefreshIndicator
+                      Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: _loadAllExpenses,
+                          child: SizedBox(
+                            height: 150,
+                            child: _expenses != null
+                                ? _expenses!.isEmpty
+                                    ? const Center(
+                                        child: Text(
+                                          'Nenhuma despesa encontrada.',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.grey,
                                           ),
-                                        );
-                                      } else {
-                                        final expense = _expenses![index];
-                                        final formattedDate =
-                                            DateFormat('dd/MM/yyyy').format(
-                                          DateTime.parse(expense.dataDocumento),
-                                        );
-                                        return Container(
-                                          margin: const EdgeInsets.only(
-                                            right: 8,
-                                            bottom: 8,
-                                            top: 8,
-                                            left: 10,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'Descrição: ${expense.tipoDespesa}',
-                                                style: const TextStyle(
-                                                        fontSize: 16)
-                                                    .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: _expenses!.length,
+                                        itemBuilder: (context, index) {
+                                          if (_expenses!.isEmpty) {
+                                            return Center(
+                                              child: Text(
+                                                'Sem despesas no período',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.grey,
+                                                ),
                                               ),
-                                              _formatExpenseValue(
-                                                  expense.valorLiquido),
-                                              Text(
-                                                  'Tipo da despesa: ${expense.tipoDespesa} '),
-                                              Text(
-                                                  'Data do Documento: $formattedDate')
-                                            ],
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  )
-                            : const SizedBox.shrink(),
+                                            );
+                                          } else {
+                                            final expense = _expenses![index];
+                                            final formattedDate =
+                                                DateFormat('dd/MM/yyyy').format(
+                                              DateTime.parse(
+                                                  expense.dataDocumento),
+                                            );
+                                            return Container(
+                                              width: 390,
+                                              margin: const EdgeInsets.only(
+                                                right: 10,
+                                                bottom: 8,
+                                                top: 8,
+                                                left: 10,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 20.0,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[200],
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Descrição: ${expense.tipoDespesa}',
+                                                    style: const TextStyle(
+                                                            fontSize: 16)
+                                                        .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  _formatExpenseValue(
+                                                      expense.valorLiquido),
+                                                  Text(
+                                                      'Tipo da despesa: ${expense.tipoDespesa} '),
+                                                  Text(
+                                                      'Data do Documento: $formattedDate')
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      )
+                                : const SizedBox.shrink(),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
@@ -358,6 +378,11 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
     if (_selectedMonth != null && _selectedYear != null) {
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
+      setState(() {
+        _expenses = _expenses;
+      });
+    } else {
+      await _loadAllExpenses();
     }
   }
 

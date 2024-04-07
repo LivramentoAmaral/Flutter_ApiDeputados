@@ -73,6 +73,12 @@ class _StateSearchPageState extends State<StateSearchPage> {
     }
   }
 
+  void _clearSearch() {
+    setState(() {
+      _deputies.clear();
+    });
+  }
+
   void _searchDeputies(String query) {
     query = query.toUpperCase();
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -83,12 +89,6 @@ class _StateSearchPageState extends State<StateSearchPage> {
         _clearSearch();
         _loadDeputies('');
       }
-    });
-  }
-
-  void _clearSearch() {
-    setState(() {
-      _deputies.clear();
     });
   }
 

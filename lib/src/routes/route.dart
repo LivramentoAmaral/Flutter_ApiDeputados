@@ -26,8 +26,7 @@ class RoutesApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/comissions': (context) => ComissionsPage(),
-        '/listorsearch': (context) =>
-            const ListOrSearchPage(), // Corrigindo a rota para ListOrSearchPage
+        '/listorsearch':(context) => ListOrSearchPage(),
         '/listDeputy': (context) => const ListDeputy(),
         '/details': (context) => const DetailsDeputyPage(),
         '/detailscomissions': (context) =>

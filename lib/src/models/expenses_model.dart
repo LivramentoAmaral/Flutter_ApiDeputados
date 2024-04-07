@@ -48,13 +48,16 @@ class ExpensesModel {
       mes: map['mes'] as int,
       nomeFornecedor: map['nomeFornecedor'] as String,
       numDocumento: map['numDocumento'] as String,
-      numRessarcimento: map['numRessarcimento']
-          as String?, // Alterado para permitir valor nulo
+      numRessarcimento: map['numRessarcimento'] == null
+          ? null
+          : map['numRessarcimento']
+              as String, // Alterado para permitir valor nulo
       parcela: map['parcela'] as int,
       tipoDespesa: map['tipoDespesa'] as String,
       tipoDocumento: map['tipoDocumento'] as String,
-      urlDocumento:
-          map['urlDocumento'] as String?, // Alterado para permitir valor nulo
+      urlDocumento: map['urlDocumento'] == null
+          ? null
+          : map['urlDocumento'] as String, // Alterado para permitir valor nulo
       valorDocumento: map['valorDocumento'] as double,
       valorGlosa: map['valorGlosa'] as double,
       valorLiquido: map['valorLiquido'] as double,

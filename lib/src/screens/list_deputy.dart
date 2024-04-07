@@ -15,8 +15,6 @@ class _ListDeputyState extends State<ListDeputy> {
   // ignore: unused_field
   List<DeputyModel> _deputies = [];
   List<DeputyModel> _filteredDeputies = [];
-  bool _isLoading = true;
-  bool _hasError = false;
 
   @override
   void initState() {
@@ -30,15 +28,10 @@ class _ListDeputyState extends State<ListDeputy> {
       setState(() {
         _deputies = deputies;
         _filteredDeputies = deputies;
-        _isLoading = false;
       });
     } catch (e) {
       // ignore: avoid_print
       print('Erro ao carregar deputados: $e');
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-      });
     }
   }
 
@@ -50,35 +43,34 @@ class _ListDeputyState extends State<ListDeputy> {
     );
   }
 
+  void _navigateToSearchPage() {
+    Navigator.pushNamed(
+      context,
+      '/search',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Deputados'),
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : _hasError
-              ? Center(
-                  child: Text('Erro ao carregar deputados.'),
-                )
-              : ListView.builder(
-                  itemCount: _filteredDeputies.length,
-                  itemBuilder: (context, index) {
-                    final deputy = _filteredDeputies[index];
-                    return ListTile(
-                      onTap: () => _viewDeputyDetails(deputy),
-                      leading: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: NetworkImage(deputy.photo),
-                      ),
-                      title: Text(deputy.name),
-                      subtitle: Text('${deputy.party} - ${deputy.state}'),
-                    );
-                  },
-                ),
+      body: ListView.builder(
+        itemCount: _filteredDeputies.length,
+        itemBuilder: (context, index) {
+          final deputy = _filteredDeputies[index];
+          return ListTile(
+            onTap: () => _viewDeputyDetails(deputy),
+            leading: CircleAvatar(
+              radius: 25,
+              backgroundImage: NetworkImage(deputy.photo),
+            ),
+            title: Text(deputy.name),
+            subtitle: Text('${deputy.party} - ${deputy.state}'),
+          );
+        },
+      ),
     );
   }
 }
