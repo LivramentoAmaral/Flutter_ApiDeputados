@@ -4,6 +4,7 @@ import 'package:flutter_deputyapp/src/screens/details_comissions_deputy.dart';
 import 'package:flutter_deputyapp/src/screens/detailsdeputy_screem.dart';
 import 'package:flutter_deputyapp/src/screens/home_page.dart';
 import 'package:flutter_deputyapp/src/screens/list_deputy.dart';
+import 'package:flutter_deputyapp/src/screens/listorsearch_screem.dart';
 import 'package:flutter_deputyapp/src/screens/search_deputy.dart';
 import 'package:flutter_deputyapp/src/screens/search_namedeputy.dart';
 import 'package:flutter_deputyapp/src/screens/search_party.dart';
@@ -16,6 +17,7 @@ class RoutesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Deputy App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -24,6 +26,8 @@ class RoutesApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/comissions': (context) => ComissionsPage(),
+        '/listorsearch': (context) =>
+            const ListOrSearchPage(), // Corrigindo a rota para ListOrSearchPage
         '/listDeputy': (context) => const ListDeputy(),
         '/details': (context) => const DetailsDeputyPage(),
         '/detailscomissions': (context) =>
@@ -35,12 +39,14 @@ class RoutesApp extends StatelessWidget {
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/details' && settings.arguments is int) {
+          // ignore: unused_local_variable
           final int deputyId = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) => const DetailsDeputyPage(),
           );
         } else if (settings.name == '/detailscomissions' &&
             settings.arguments is int) {
+          // ignore: unused_local_variable
           final int comissionId = settings.arguments as int;
           return MaterialPageRoute(
             builder: (context) => const ComissionDetailsPage(),

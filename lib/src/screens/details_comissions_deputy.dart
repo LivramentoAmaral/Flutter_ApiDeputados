@@ -44,7 +44,7 @@ class ComissionDetailsPage extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 60,
                           backgroundImage: NetworkImage(
-                            comission.coordinator.urlFoto ?? '',
+                            comission.coordinator.urlFoto,
                           ),
                         ),
                       ),
@@ -72,7 +72,7 @@ class ComissionDetailsPage extends StatelessWidget {
                                 style: const TextStyle(fontSize: 18),
                               ),
                               Text(
-                                'Email: ${comission.coordinator.email ?? "Não fornecido"}',
+                                'Email: ${comission.coordinator.email}',
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ],
