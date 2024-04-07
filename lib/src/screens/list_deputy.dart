@@ -11,6 +11,7 @@ class ListDeputy extends StatefulWidget {
 
 class _ListDeputyState extends State<ListDeputy> {
   final DeputyRepository _repository = DeputyRepository();
+  // ignore: unused_field
   List<DeputyModel> _deputies = [];
   List<DeputyModel> _filteredDeputies = [];
   bool _isLoading = true;
