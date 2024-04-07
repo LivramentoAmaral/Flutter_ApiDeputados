@@ -379,7 +379,10 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     if (_selectedMonth != null && _selectedYear != null) {
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
       setState(() {
-        _expenses = _expenses;
+        _expenses = _expenses!.where((expense) {
+          final DateTime date = DateTime.parse(expense.dataDocumento);
+          return date.year == _selectedYear! && date.month == _selectedMonth!;
+        }).toList();
       });
     } else {
       await _loadAllExpenses();

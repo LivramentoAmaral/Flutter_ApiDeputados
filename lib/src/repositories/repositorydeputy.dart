@@ -152,16 +152,11 @@ class DeputyRepository {
           final List<ExpensesModel> expenses = [];
 
           if (data != null) {
-            for (final item in data) {
-              if (item is Map<String, dynamic>) {
-                final expense = ExpensesModel.fromMap(item);
-                // ignore: unnecessary_null_comparison
-                if (expense != null) {
-                  expenses.add(expense);
-                }
-              }
-            }
+            expenses.addAll(data.map(
+                (item) => ExpensesModel.fromMap(item as Map<String, dynamic>)));
           }
+
+          print(expenses);
           return expenses;
         } else {
           return []; // Retorna uma lista vazia se não houver dados
