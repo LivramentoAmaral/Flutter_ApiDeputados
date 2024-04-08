@@ -34,7 +34,9 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadAllExpenses();
+    setState(() {
+      _loadAllExpenses();
+    });
   }
 
   Future<void> _loadAllExpenses() async {
@@ -378,12 +380,6 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
     if (_selectedMonth != null && _selectedYear != null) {
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
-      setState(() {
-        _expenses = _expenses!.where((expense) {
-          final DateTime date = DateTime.parse(expense.dataDocumento);
-          return date.year == _selectedYear! && date.month == _selectedMonth!;
-        }).toList();
-      });
     } else {
       await _loadAllExpenses();
     }
@@ -393,11 +389,11 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     try {
       final List<ExpensesModel> updatedExpenses = await DeputyRepository()
           .getExpensesByMonthAndYear(deputyId, year, month);
+
       setState(() {
         _expenses = updatedExpenses;
       });
     } catch (e) {
-      // ignore: avoid_print
       print('Erro ao atualizar despesas: $e');
       // Trate o erro conforme necessário
     }
