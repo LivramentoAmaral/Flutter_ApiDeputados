@@ -15,6 +15,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   int? _selectedMonth;
   int? _selectedYear;
   List<ExpensesModel>? _expenses;
+  bool _isLoading = true;
 
   final List<String> _months = [
     'Janeiro',
@@ -32,29 +33,29 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
   ];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    setState(() {
-      _loadAllExpenses();
-    });
+  void initState() {
+    super.initState();
   }
 
-  Future<void> _loadAllExpenses() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
+  Future<void> _loadAllExpenses(int deputyId) async {
     _expenses = await DeputyRepository().getAllExpenses(deputyId);
-    setState(() {});
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
+    if (_isLoading) {
+      _loadAllExpenses(deputyId);
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes do Deputado'),
       ),
       body: FutureBuilder<ParliamentarianDetails>(
-        future: DeputyRepository().getParliamentarianDetails(
-          ModalRoute.of(context)?.settings.arguments as int,
-        ),
+        future: DeputyRepository().getParliamentarianDetails(deputyId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -176,11 +177,9 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                width:
-                                    150, // Defina um tamanho adequado para o DropdownButton
+                                width: 150,
                                 child: DropdownButton<String>(
-                                  isExpanded:
-                                      true, // Isso permite que o DropdownButton se expanda horizontalmente
+                                  isExpanded: true,
                                   hint: const Text('Selecione o mês'),
                                   value: _selectedMonth != null
                                       ? _months[_selectedMonth! - 1]
@@ -189,7 +188,7 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                                     setState(() {
                                       _selectedMonth =
                                           _months.indexOf(newValue!) + 1;
-                                      _updateExpensesIfNeeded();
+                                      _updateExpensesIfNeeded(deputyId);
                                     });
                                   },
                                   items: _months.map((String value) {
@@ -202,17 +201,15 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                               ),
                               const SizedBox(width: 10),
                               Container(
-                                width:
-                                    150, // Defina um tamanho adequado para o DropdownButton
+                                width: 150,
                                 child: DropdownButton<int>(
-                                  isExpanded:
-                                      true, // Isso permite que o DropdownButton se expanda horizontalmente
+                                  isExpanded: true,
                                   hint: const Text('Selecione o ano'),
                                   value: _selectedYear,
                                   onChanged: (int? newValue) {
                                     setState(() {
                                       _selectedYear = newValue;
-                                      _updateExpensesIfNeeded();
+                                      _updateExpensesIfNeeded(deputyId);
                                     });
                                   },
                                   items: List.generate(
@@ -249,7 +246,6 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                             ),
                           ),
                           Text(
-                            // ignore: unnecessary_string_interpolations
                             "${totalExpenses.toStringAsFixed(2)}",
                             style: const TextStyle(
                               fontSize: 18,
@@ -262,86 +258,10 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                       // Lista de despesas com RefreshIndicator
                       Expanded(
                         child: RefreshIndicator(
-                          onRefresh: _loadAllExpenses,
+                          onRefresh: () => _loadAllExpenses(deputyId),
                           child: SizedBox(
                             height: 150,
-                            child: _expenses != null
-                                ? _expenses!.isEmpty
-                                    ? const Center(
-                                        child: Text(
-                                          'Nenhuma despesa encontrada.',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: _expenses!.length,
-                                        itemBuilder: (context, index) {
-                                          if (_expenses!.isEmpty) {
-                                            return Center(
-                                              child: Text(
-                                                'Sem despesas no período',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            final expense = _expenses![index];
-                                            final formattedDate =
-                                                DateFormat('dd/MM/yyyy').format(
-                                              DateTime.parse(
-                                                  expense.dataDocumento),
-                                            );
-                                            return Container(
-                                              width: 390,
-                                              margin: const EdgeInsets.only(
-                                                right: 10,
-                                                bottom: 8,
-                                                top: 8,
-                                                left: 10,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 20.0,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Descrição: ${expense.tipoDespesa}',
-                                                    style: const TextStyle(
-                                                            fontSize: 16)
-                                                        .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  _formatExpenseValue(
-                                                      expense.valorLiquido),
-                                                  Text(
-                                                      'Tipo da despesa: ${expense.tipoDespesa} '),
-                                                  Text(
-                                                      'Data do Documento: $formattedDate')
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      )
-                                : const SizedBox.shrink(),
+                            child: _buildExpensesList(),
                           ),
                         ),
                       ),
@@ -350,11 +270,11 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
                         onPressed: () async {
                           _selectedMonth = null;
                           _selectedYear = null;
-                          await _loadAllExpenses(); // Carregar todas as despesas
+                          await _loadAllExpenses(deputyId);
                         },
                         child: const Text('Listar todas'),
                       ),
-                      const SizedBox(height: 20), // Espaçamento após os botões
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -376,12 +296,11 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
     );
   }
 
-  Future<void> _updateExpensesIfNeeded() async {
-    final int deputyId = ModalRoute.of(context)?.settings.arguments as int;
+  Future<void> _updateExpensesIfNeeded(int deputyId) async {
     if (_selectedMonth != null && _selectedYear != null) {
       await _updateExpenses(deputyId, _selectedYear!, _selectedMonth!);
     } else {
-      await _loadAllExpenses();
+      await _loadAllExpenses(deputyId);
     }
   }
 
@@ -395,62 +314,112 @@ class _DetailsDeputyPageState extends State<DetailsDeputyPage> {
       });
     } catch (e) {
       print('Erro ao atualizar despesas: $e');
-      // Trate o erro conforme necessário
+    }
+  }
+
+  Widget _buildExpensesList() {
+    if (_expenses != null) {
+      if (_expenses!.isEmpty) {
+        return const Center(
+          child: Text(
+            'Nenhuma despesa encontrada.',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey,
+            ),
+          ),
+        );
+      } else {
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _expenses!.length,
+          itemBuilder: (context, index) {
+            final expense = _expenses![index];
+            final formattedDate = DateFormat('dd/MM/yyyy')
+                .format(DateTime.parse(expense.dataDocumento));
+            return Container(
+              width: 390,
+              margin: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 8,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Descrição: ${expense.tipoDespesa}',
+                    style: const TextStyle(fontSize: 16).copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  _formatExpenseValue(expense.valorLiquido),
+                  Text('Tipo da despesa: ${expense.tipoDespesa}'),
+                  Text('Data do Documento: $formattedDate')
+                ],
+              ),
+            );
+          },
+        );
+      }
+    } else {
+      return const SizedBox.shrink();
     }
   }
 
   Widget _formatExpenseValue(double? value) {
     if (value != null) {
-      String stringValue = value.toStringAsFixed(
-          2); // Formata o valor para ter sempre duas casas decimais após o ponto
+      String stringValue = value.toStringAsFixed(2);
       List<String> parts = stringValue.split('.');
-      if (parts.length > 1) {
-        if (parts[1].length == 1) {
-          return RichText(
-            text: TextSpan(
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black, // Cor do texto "Valor Líquido:"
-              ),
-              children: [
-                const TextSpan(
-                    text: 'Valor Líquido: '), // Texto "Valor Líquido:"
-                TextSpan(
-                  text:
-                      'R\$ ${parts[0]}.${parts[1]}0', // Adicionando "R\$" antes do valor
-                  style: const TextStyle(
-                    color: Colors.greenAccent, // Cor do valor
-                    fontWeight: FontWeight.bold,
-                  ),
+      if (parts.length > 1 && parts[1].length == 1) {
+        return RichText(
+          text: TextSpan(
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+            children: [
+              const TextSpan(text: 'Valor Líquido: '),
+              TextSpan(
+                text: 'R\$ ${parts[0]}.${parts[1]}0',
+                style: const TextStyle(
+                  color: Colors.greenAccent,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-          );
-        }
-      }
-      return RichText(
-        text: TextSpan(
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black, // Cor do texto "Valor Líquido:"
-          ),
-          children: [
-            const TextSpan(text: 'Valor Líquido: '), // Texto "Valor Líquido:"
-            TextSpan(
-              text: 'R\$ $stringValue', // Adicionando "R\$" antes do valor
-              style: const TextStyle(
-                color: Colors.greenAccent, // Cor do valor
-                fontWeight: FontWeight.bold,
               ),
+            ],
+          ),
+        );
+      } else {
+        return RichText(
+          text: TextSpan(
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
             ),
-          ],
-        ),
-      );
+            children: [
+              const TextSpan(text: 'Valor Líquido: '),
+              TextSpan(
+                text: 'R\$ $stringValue',
+                style: const TextStyle(
+                  color: Colors.greenAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
     }
     return const Text(
       'Valor Líquido: R\$ 0.00',
       style: TextStyle(
-        color: Colors.black, // Cor do texto "Valor Líquido:"
+        color: Colors.black,
         fontWeight: FontWeight.bold,
         fontSize: 16,
       ),
